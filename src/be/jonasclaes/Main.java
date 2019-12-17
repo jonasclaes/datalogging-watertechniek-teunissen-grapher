@@ -29,8 +29,10 @@ import java.util.List;
 public class Main {
     private static void createChart(String chartName, ArrayList<DataPoint> dataPoints, String fileName) {
         try {
-            int highestFlow = 0;
-            int highestPressure = 0;
+            double highestFlow = 0;
+            double highestPressure = 0;
+            double lowestFlow = Double.MAX_VALUE;
+            double lowestPressure = Double.MAX_VALUE;
             final XYSeries data = new XYSeries( "data" );
 
             System.out.println("Looping through datapoints.");
@@ -38,11 +40,19 @@ public class Main {
                 data.add(dataPoint.measuredFlow, dataPoint.measuredPressure);
 
                 if (dataPoint.measuredFlow > highestFlow) {
-                    highestFlow = (int) dataPoint.measuredFlow + 3;
+                    highestFlow = dataPoint.measuredFlow * 1.1;
+                }
+
+                if (dataPoint.measuredFlow < lowestFlow) {
+                    lowestFlow = dataPoint.measuredFlow / 1.1;
                 }
 
                 if (dataPoint.measuredPressure > highestPressure) {
-                    highestPressure = (int) dataPoint.measuredPressure + 50;
+                    highestPressure = dataPoint.measuredPressure * 1.1;
+                }
+
+                if (dataPoint.measuredPressure < lowestPressure) {
+                    lowestPressure = dataPoint.measuredPressure / 1.1;
                 }
             }
 
@@ -52,8 +62,8 @@ public class Main {
             // Grafiek aanmaken
             System.out.println("Creating chart...");
             JFreeChart lineChart = ChartFactory.createXYLineChart(chartName,
-                    "Capacity Q",
-                    "Total manometric head",
+                    "",
+                    "",
                     dataset,
                     PlotOrientation.VERTICAL,
                     false,
@@ -72,18 +82,20 @@ public class Main {
             System.out.println("Adding bar on y-axis.");
             NumberAxis rangePressure = new NumberAxis();
             double maxP = highestPressure;
-            rangePressure.setRange(0, maxP);
+            double lowP = lowestPressure;
+            rangePressure.setRange(lowP, maxP);
             rangePressure.setLabel("Pressure (bar)");
-            rangePressure.setTickUnit(new NumberTickUnit(Math.round(maxP / 15)));
+            rangePressure.setTickUnit(new NumberTickUnit(maxP / 15));
 
             // Y-as atm
             System.out.println("Adding atm on y-axis.");
             NumberAxis rangeAtm = new NumberAxis();
             double factorToAtm = 1.013;
             double maxAtm = highestPressure / factorToAtm;
-            rangeAtm.setRange(0, maxAtm);
+            double lowAtm = lowestPressure / factorToAtm;
+            rangeAtm.setRange(lowAtm, maxAtm);
             rangeAtm.setLabel("atm");
-            rangeAtm.setTickUnit(new NumberTickUnit(Math.round(maxAtm / 15)));
+            rangeAtm.setTickUnit(new NumberTickUnit(maxAtm / 15));
             rangeAtm.setLabelLocation(AxisLabelLocation.MIDDLE);
 
             // Defineer 2 mogelijke Y-assen
@@ -96,18 +108,21 @@ public class Main {
             System.out.println("Adding m3/h on x-axis.");
             NumberAxis domainm3h = new NumberAxis();
             double maxm3h = highestFlow;
-            domainm3h.setRange(0, maxm3h);
+            double minm3h = lowestFlow;
+            domainm3h.setRange(minm3h, maxm3h);
             domainm3h.setLabel("Capacity (m3/h)");
-            domainm3h.setTickUnit(new NumberTickUnit(Math.round(maxm3h / 15)));
+            domainm3h.setTickUnit(new NumberTickUnit(maxm3h / 15));
+            domainm3h.setLabelLocation(AxisLabelLocation.MIDDLE);
 
             // X-as l/min
             System.out.println("Adding l/min on x-axis.");
             NumberAxis domainlmin = new NumberAxis();
             double factorToLMin = 16.666667;
             double maxLMin = highestFlow * factorToLMin;
-            domainlmin.setRange(0, maxLMin);
+            double minLMin = lowestFlow * factorToLMin;
+            domainlmin.setRange(minLMin, maxLMin);
             domainlmin.setLabel("l/min");
-            domainlmin.setTickUnit(new NumberTickUnit(Math.round(maxLMin / 15)));
+            domainlmin.setTickUnit(new NumberTickUnit(maxLMin / 15));
             domainlmin.setLabelLocation(AxisLabelLocation.HIGH_END);
 
             // X-as gpm
@@ -115,9 +130,10 @@ public class Main {
             NumberAxis domaingpm = new NumberAxis();
             double factorToGpm = 3.666667;
             double maxGpm = highestFlow * factorToGpm;
-            domaingpm.setRange(0, maxGpm);
+            double minGpm = lowestFlow * factorToGpm;
+            domaingpm.setRange(minGpm, maxGpm);
             domaingpm.setLabel("gpm");
-            domaingpm.setTickUnit(new NumberTickUnit(Math.round(maxGpm / 15)));
+            domaingpm.setTickUnit(new NumberTickUnit(maxGpm / 15));
             domaingpm.setLabelLocation(AxisLabelLocation.HIGH_END);
 
             // X-as imp gpm
@@ -125,9 +141,10 @@ public class Main {
             NumberAxis domainimpgpm = new NumberAxis();
             double factorToImpGpm = 4.402867;
             double maxImpGpm = highestFlow * factorToImpGpm;
-            domainimpgpm.setRange(0, maxImpGpm);
+            double minImpGpm = lowestFlow * factorToImpGpm;
+            domainimpgpm.setRange(minImpGpm, maxImpGpm);
             domainimpgpm.setLabel("imp gpm");
-            domainimpgpm.setTickUnit(new NumberTickUnit(Math.round(maxImpGpm / 15)));
+            domainimpgpm.setTickUnit(new NumberTickUnit(maxImpGpm / 15));
             domainimpgpm.setLabelLocation(AxisLabelLocation.HIGH_END);
 
             // Defineer 4 mogelijke X-assen
@@ -233,7 +250,7 @@ public class Main {
             System.out.println("NAME = " + name);
             for (Double[] data: dataArray) {
                 System.out.println("DATA = [" + data[0] + ", " + data[1] + ", " + data[2] + "]");
-                dataPoints.add(new DataPoint(data[0], data[1], data[2]));
+                dataPoints.add(new DataPoint(data[0], data[2], data[1]));
             }
 
             resultSet.close();

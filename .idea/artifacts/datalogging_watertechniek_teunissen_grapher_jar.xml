@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="datalogging-watertechniek-teunissen-grapher:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/datalogging_watertechniek_teunissen_grapher_jar</output-path>
+    <root id="archive" name="datalogging-watertechniek-teunissen-grapher.jar">
+      <element id="module-output" name="datalogging-watertechniek-teunissen-grapher" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/itextpdf-5.5.13.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/postgresql-42.2.8.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/itextpdf-5.5.13.1-javadoc.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jfreechart-1.0.19.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/itextpdf-5.5.13.1-sources.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jcommon-1.0.12.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
